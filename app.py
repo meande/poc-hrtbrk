@@ -38,7 +38,7 @@ if not st.session_state.intake_complete:
             st.session_state.event_type = event_type
             st.session_state.key_fact = key_fact
             st.session_state.intake_complete = True
-            st.experimental_rerun()
+            st.rerun()
     st.stop()
 
 # --- Chat memory --------------------------------------------------
@@ -77,6 +77,7 @@ if user_input:
                 messages=st.session_state.messages,
                 temperature=0.7,
                 max_tokens=300,
+                timeout=30
             )
             assistant_message = response.choices[0].message.content
             st.session_state.messages.append(
@@ -87,4 +88,4 @@ if user_input:
             st.markdown(assistant_message)
 
         # Auto‑scroll to newest message
-        st.experimental_rerun()
+        st.rerun()

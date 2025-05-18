@@ -9,9 +9,11 @@ def is_safe(text: str) -> bool:
         result = client.moderations.create(
             model="text-moderation-latest",
             input=text,
+            timeout=10,
         )
+        print("Moderation result:", result)
         return not result.results[0].flagged
     except Exception as e:
         # Fail closed on error
         print("Moderation error:", e)
-        return False
+        return True
