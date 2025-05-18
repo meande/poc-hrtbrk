@@ -1,6 +1,6 @@
 import os
 import streamlit as st
-from openai import OpenAI
+import openai
 from prompt_templates import SYSTEM_PROMPT
 from safety import is_safe
 
