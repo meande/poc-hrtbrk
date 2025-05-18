@@ -17,7 +17,7 @@ if not assistant_id:
     st.stop()
 
 st.set_page_config(page_title="Heartbreak POC", page_icon=":broken_heart:")
-st.title("💔 Heal Your Broken Heart – Demo")
+st.title("💔 Heal Your Broken Heart")
 
 # ── Helper functions ───────────────────────────────────────────────
 def create_new_thread() -> str:
@@ -47,12 +47,12 @@ if not st.session_state.intake_complete:
     with st.form("intake"):
         st.subheader("Tell us a bit about your situation")
         event_type = st.selectbox(
-            "What happened?", ("Select...", "Break-up", "Bereavement")
+            "Co se stalo?", ("Vyber...", "Rozchod", "Úmrtí")
         )
-        key_fact = st.text_input("In one sentence, what still hurts most?")
-        submitted = st.form_submit_button("Start Chat")
+        key_fact = st.text_input("V jedné větě, co tě bolí nejvíc?")
+        submitted = st.form_submit_button("Začít rozhovor")
 
-        if submitted and event_type != "Select..." and key_fact:
+        if submitted and event_type != "Vyber..." and key_fact:
             # persist user context
             st.session_state.event_type = event_type
             st.session_state.key_fact = key_fact
@@ -61,12 +61,18 @@ if not st.session_state.intake_complete:
             # New thread for this session
             st.session_state.thread_id = create_new_thread()
 
+            # ▼ Tell the assistant to reply in Czech
+            client.beta.threads.messages.create(
+                thread_id=st.session_state.thread_id,
+                role="user",
+                content="Prosím, od této chvíle odpovídej pouze česky.",
+            )
+
             # Prime thread with user’s first message
             client.beta.threads.messages.create(
                 thread_id=st.session_state.thread_id,
                 role="user",
-                content=f"I'm dealing with a {event_type}. "
-                        f"What hurts most is: {key_fact}.",
+                content=f"Jde o {event_type}. Nevíce mě bolí: {key_fact}.",
             )
 
             # Assistant proactive greeting
@@ -87,12 +93,12 @@ for msg in st.session_state.messages:
         st.markdown(msg["content"])
 
 # ── Chat loop ──────────────────────────────────────────────────────
-user_input = st.chat_input("Write something…")
+user_input = st.chat_input("Co tě trápí?")
 
 if user_input:
     if not is_safe(user_input):
         with st.chat_message("assistant"):
-            st.error("Let's keep the conversation safe for everyone.")
+            st.error("Pojďme tento rozhovor držet v bezpečné rovině.")
     else:
         # 1 · store in history (for next rerun)
         st.session_state.messages.append({"role": "user", "content": user_input})
@@ -109,11 +115,11 @@ if user_input:
         )
 
         # 4 · spinner + assistant reply
-        with st.spinner("HeartBuddy typing…"):
+        with st.spinner("HeartBuddy píše..."):
             assistant_message = get_assistant_reply(st.session_state.thread_id)
 
         st.session_state.messages.append(
             {"role": "assistant", "content": assistant_message}
         )
-        
+
         st.rerun()
