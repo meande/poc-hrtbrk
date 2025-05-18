@@ -94,16 +94,26 @@ if user_input:
         with st.chat_message("assistant"):
             st.error("Let's keep the conversation safe for everyone.")
     else:
-        # Log user message locally and remotely
+        # 1 · store in history (for next rerun)
         st.session_state.messages.append({"role": "user", "content": user_input})
+
+        # 2 · ⚡ show it right away
+        with st.chat_message("user"):
+            st.markdown(user_input)
+
+        # 3 · push to the thread
         client.beta.threads.messages.create(
-            thread_id=st.session_state.thread_id, role="user", content=user_input
+            thread_id=st.session_state.thread_id,
+            role="user",
+            content=user_input,
         )
 
+        # 4 · spinner + assistant reply
         with st.spinner("HeartBuddy typing…"):
             assistant_message = get_assistant_reply(st.session_state.thread_id)
 
         st.session_state.messages.append(
             {"role": "assistant", "content": assistant_message}
         )
+        
         st.rerun()
