@@ -5,6 +5,9 @@ import streamlit as st
 import openai
 from safety import is_safe   # make sure safety.py is in repo root
 
+# --- NEW: force Assistants v2 -------------------------------------
+os.environ["OPENAI_BETA_ASSISTANTS_VERSION"] = "v2"
+
 # ── Config ───────────────────────────────────────────────────────────
 openai.api_key = os.getenv("OPENAI_API_KEY")
 assistant_id   = os.getenv("ASSISTANT_ID")
