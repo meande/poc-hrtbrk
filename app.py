@@ -45,7 +45,7 @@ if "intake_complete" not in st.session_state:
 
 if not st.session_state.intake_complete:
     with st.form("intake"):
-        st.subheader("Tell us a bit about your situation")
+        st.subheader("Řekni mi něco o sobě")
         event_type = st.selectbox(
             "Co se stalo?", ("Vyber...", "Rozchod", "Úmrtí")
         )
